@@ -37,11 +37,26 @@ flowchart LR
 
 ## Screenshots
 
+<details>
+<summary>Sign in page</summary>
+
 ![Sign in](signin.png)
+
+</details>
+
+<details>
+<summary>Ride request</summary>
 
 ![Ride request](ride.png)
 
+</details>
+
+<details>
+<summary>DynamoDB record</summary>
+
 ![DynamoDB record](dynamodb.png)
+
+</details>
 
 ## Based on the AWS Wild Rydes workshop, with these changes
 
