@@ -1,130 +1,49 @@
-# AWS Project - Build a Full End-to-End Web Application with 7 Services | Step-by-Step Tutorial
+# Wild Rydes: Serverless Ride Booking App on AWS
 
-This repo contains the code files used in this [YouTube video](https://youtu.be/K6v6t5z6AsU).
+A full-stack serverless web app where users sign up, log in and request a unicorn ride. Built on AWS from scratch.
 
-## TL;DR
-We're creating a web application for a unicorn ride-sharing service called Wild Rydes (from the original [Amazon workshop](https://aws.amazon.com/serverless-workshops)).  The app uses IAM, Amplify, Cognito, Lambda, API Gateway and DynamoDB, with code stored in GitHub and incorporated into a CI/CD pipeline with Amplify.
+**Live demo:** [https://main.duht8yga6psp0.amplifyapp.com]
 
-The app will let you create an account and log in, then request a ride by clicking on a map (powered by ArcGIS).  The code can also be extended to build out more functionality.
+## Architecture
 
-## Cost
-All services used are eligible for the [AWS Free Tier](https://aws.amazon.com/free/).  Outside of the Free Tier, there may be small charges associated with building the app (less than $1 USD), but charges will continue to incur if you leave the app running.  Please see the end of the YouTube video for instructions on how to delete all resources used in the video.
+Browser > AWS Amplify (hosting) > API Gateway (Cognito authorizer) > Lambda > DynamoDB
 
-## The Application Code
-The application code is here in this repository.
+- **GitHub + Amplify:** source control and automatic redeploys on every commit
+- **Cognito:** user sign-up, email verification and login
+- **API Gateway:** REST API secured with a Cognito authorizer
+- **Lambda (Node.js 20.x):** backend logic that records each ride request
+- **DynamoDB:** stores ride data
+- **IAM:** least-privilege role so Lambda can write to the table only
 
-## The Lambda Function Code
-Here is the code for the Lambda function, originally taken from the [AWS workshop](https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-3/ ), and updated for Node 20.x:
 
-```node
-import { randomBytes } from 'crypto';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
-const client = new DynamoDBClient({});
-const ddb = DynamoDBDocumentClient.from(client);
 
-const fleet = [
-    { Name: 'Angel', Color: 'White', Gender: 'Female' },
-    { Name: 'Gil', Color: 'White', Gender: 'Male' },
-    { Name: 'Rocinante', Color: 'Yellow', Gender: 'Female' },
-];
+## Screenshots
 
-export const handler = async (event, context) => {
-    if (!event.requestContext.authorizer) {
-        return errorResponse('Authorization not configured', context.awsRequestId);
-    }
+![Sign in](docs/signin.png)
+![Ride request](docs/ride.png)
+![DynamoDB record](docs/dynamodb.png)
 
-    const rideId = toUrlString(randomBytes(16));
-    console.log('Received event (', rideId, '): ', event);
+## Based on the AWS Wild Rydes workshop, with these changes
 
-    const username = event.requestContext.authorizer.claims['cognito:username'];
-    const requestBody = JSON.parse(event.body);
-    const pickupLocation = requestBody.PickupLocation;
+- GitHub instead of CodeCommit (no longer offered to new AWS customers)
+- Amplify Gen 2 and Node.js 20.x
+- Deployed in us-east-1
+- [Add your own extra here, e.g. Terraform, CloudWatch alarm, CI]
 
-    const unicorn = findUnicorn(pickupLocation);
+## Problems I solved
 
-    try {
-        await recordRide(rideId, username, unicorn);
-        return {
-            statusCode: 201,
-            body: JSON.stringify({
-                RideId: rideId,
-                Unicorn: unicorn,
-                Eta: '30 seconds',
-                Rider: username,
-            }),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-            },
-        };
-    } catch (err) {
-        console.error(err);
-        return errorResponse(err.message, context.awsRequestId);
-    }
-};
+- **Empty config error:** the site showed "No Cognito User Pool Configured" because the region value in `config.js` was blank, then malformed. Fixed the syntax and redeployed.
+- **Sign-up failing:** the app client had a client secret, which browser apps cannot use. Created a new public SPA app client with no secret.
+- **Missing verification email:** confirmed the test user manually in the Cognito console.
 
-function findUnicorn(pickupLocation) {
-    console.log('Finding unicorn for ', pickupLocation.Latitude, ', ', pickupLocation.Longitude);
-    return fleet[Math.floor(Math.random() * fleet.length)];
-}
+## What I learned
 
-async function recordRide(rideId, username, unicorn) {
-    const params = {
-        TableName: 'Rides',
-        Item: {
-            RideId: rideId,
-            User: username,
-            Unicorn: unicorn,
-            RequestTime: new Date().toISOString(),
-        },
-    };
-    await ddb.send(new PutCommand(params));
-}
+Wiring managed auth to a serverless backend, debugging a live deployment, and how IAM permissions connect services securely.
 
-function toUrlString(buffer) {
-    return buffer.toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-}
+## Run it yourself
 
-function errorResponse(errorMessage, awsRequestId) {
-    return {
-        statusCode: 500,
-        body: JSON.stringify({
-            Error: errorMessage,
-            Reference: awsRequestId,
-        }),
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-        },
-    };
-}
-```
-
-## The Lambda Function Test Function
-Here is the code used to test the Lambda function:
-
-```json
-{
-    "path": "/ride",
-    "httpMethod": "POST",
-    "headers": {
-        "Accept": "*/*",
-        "Authorization": "eyJraWQiOiJLTzRVMWZs",
-        "content-type": "application/json; charset=UTF-8"
-    },
-    "queryStringParameters": null,
-    "pathParameters": null,
-    "requestContext": {
-        "authorizer": {
-            "claims": {
-                "cognito:username": "the_username"
-            }
-        }
-    },
-    "body": "{\"PickupLocation\":{\"Latitude\":47.6174755835663,\"Longitude\":-122.28837066650185}}"
-}
-```
-
+1. Create a Cognito user pool and a public app client (no secret)
+2. Put your pool ID, client ID and region in `js/config.js`
+3. Deploy the API Gateway and Lambda backend, then add the invoke URL to `config.js`
+4. Push to GitHub and connect the repo to Amplify
