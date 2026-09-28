@@ -2,7 +2,7 @@
 
 A full-stack serverless web app where users sign up, log in and request a unicorn ride. Built on AWS from scratch.
 
-**Live demo:** https://main.duht8yga6psp0.amplifyapp.com
+**Live demo:** Taken down to avoid AWS charges. See the architecture diagram and screenshots below.
 
 ## Architecture
 
