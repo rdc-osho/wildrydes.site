@@ -11,23 +11,22 @@ Browser > AWS Amplify (hosting) > API Gateway (Cognito authorizer) > Lambda > Dy
 - **GitHub + Amplify:** source control and automatic redeploys on every commit
 - **Cognito:** user sign-up, email verification and login
 - **API Gateway:** REST API secured with a Cognito authorizer
-- **Lambda (Node.js 20.x):** backend logic that records each ride request
+- **Lambda (Node.js 24.x):** backend logic that records each ride request
 - **DynamoDB:** stores ride data
 - **IAM:** least-privilege role so Lambda can write to the table only
 
-
-
-
 ## Screenshots
 
-![Sign in](docs/signin.png)
-![Ride request](docs/WildRydedocs/ride.png)
-![DynamoDB record](docs/WildRydedocs/dynamodb.png)
+![Sign in](signin.png)
+
+![Ride request](ride.png)
+
+![DynamoDB record](dynamodb.png)
 
 ## Based on the AWS Wild Rydes workshop, with these changes
 
 - GitHub instead of CodeCommit (no longer offered to new AWS customers)
-- Amplify Gen 2 and Node.js 20.x
+- Amplify Gen 2 and Node.js 24.x
 - Deployed in us-east-1
 
 
