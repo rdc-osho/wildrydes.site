@@ -2,7 +2,7 @@
 
 A full-stack serverless web app where users sign up, log in and request a unicorn ride. Built on AWS from scratch.
 
-**Live demo:** [https://main.duht8yga6psp0.amplifyapp.com]
+**Live demo:** https://main.duht8yga6psp0.amplifyapp.com
 
 ## Architecture
 
@@ -20,16 +20,16 @@ Browser > AWS Amplify (hosting) > API Gateway (Cognito authorizer) > Lambda > Dy
 
 ## Screenshots
 
-![Sign in](docs/signin.png)
-![Ride request](docs/ride.png)
-![DynamoDB record](docs/dynamodb.png)
+![Sign in](wildrydes/WildRydedocs/signin.png)
+![Ride request](wildrydes/WildRydedocs/ride.png)
+![DynamoDB record](wildrydes/WildRydedocs/dynamodb.png)
 
 ## Based on the AWS Wild Rydes workshop, with these changes
 
 - GitHub instead of CodeCommit (no longer offered to new AWS customers)
 - Amplify Gen 2 and Node.js 20.x
 - Deployed in us-east-1
-- [Add your own extra here, e.g. Terraform, CloudWatch alarm, CI]
+
 
 ## Problems I solved
 
