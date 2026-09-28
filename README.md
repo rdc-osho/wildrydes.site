@@ -20,9 +20,9 @@ Browser > AWS Amplify (hosting) > API Gateway (Cognito authorizer) > Lambda > Dy
 
 ## Screenshots
 
-![Sign in](wildrydes/WildRydedocs/signin.png)
-![Ride request](wildrydes/WildRydedocs/ride.png)
-![DynamoDB record](wildrydes/WildRydedocs/dynamodb.png)
+![Sign in](docs/signin.png)
+![Ride request](docs/WildRydedocs/ride.png)
+![DynamoDB record](docs/WildRydedocs/dynamodb.png)
 
 ## Based on the AWS Wild Rydes workshop, with these changes
 
