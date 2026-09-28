@@ -5,6 +5,6 @@ window._config = {
         region: 'us-east-1'
     },
     api: {
-        invokeUrl: ''
+        invokeUrl: 'https://zig4ms4nci.execute-api.us-east-1.amazonaws.com/dev'
     }
 };
