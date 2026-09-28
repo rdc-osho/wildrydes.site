@@ -6,7 +6,27 @@ A full-stack serverless web app where users sign up, log in and request a unicor
 
 ## Architecture
 
-Browser > AWS Amplify (hosting) > API Gateway (Cognito authorizer) > Lambda > DynamoDB
+```mermaid
+flowchart LR
+    U["Browser<br/>Wild Rydes site"]
+    GH["GitHub<br/>source code"]
+    subgraph AWS["AWS us-east-1"]
+        AMP["Amplify<br/>static hosting"]
+        COG["Cognito<br/>user pool"]
+        APIGW["API Gateway<br/>REST API"]
+        LAM["Lambda<br/>RequestUnicorn"]
+        DDB[("DynamoDB<br/>Rides table")]
+        IAM["IAM role<br/>write to table"]
+    end
+    GH -->|"deploys on push"| AMP
+    U -->|"loads site"| AMP
+    U -->|"sign up / sign in"| COG
+    U -->|"ride request + token"| APIGW
+    APIGW -.->|"validates token"| COG
+    APIGW --> LAM
+    LAM --> DDB
+    IAM -.->|"permissions"| LAM
+```
 
 - **GitHub + Amplify:** source control and automatic redeploys on every commit
 - **Cognito:** user sign-up, email verification and login
